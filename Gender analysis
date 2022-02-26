@@ -1,0 +1,123 @@
+####################### Data Visualization ###################################
+
+library(readxl)
+X2020_1_ <- read_excel("C:/Users/zouhaier/Desktop/Statistisk/2020 (2).xlsx")
+my_data <- X2020_1_ 
+View(my_data)
+X2021_1_1_ <- read_excel("C:/Users/zouhaier/Desktop/Statistisk/2021 (1) (1).xlsx")
+my_data2 <- X2021_1_1_
+View(my_data1)
+
+##### Data cleaning for for 2020 ####################################################
+#Data cleaning
+library(stringr)
+my_data[] <- lapply(my_data, gsub, pattern='‰', replacement='ä')
+my_data[] <- lapply(my_data, gsub, pattern='ˆ', replacement='ö')
+my_data[] <- lapply(my_data, gsub, pattern='ˆ', replacement='ö')
+my_data[] <- lapply(my_data, gsub, pattern='Â', replacement='å')
+my_data[] <- lapply(my_data, gsub, pattern='÷', replacement='ö')
+my_data[] <- lapply(my_data, gsub, pattern='ƒ', replacement='ä')
+names(my_data)[22] <- 'Utbildad inom område'
+my_data$Uppdrag<-str_remove(my_data$Uppdrag, "[0-9]+")
+my_data$Uppdrag<- str_replace_all(my_data$Uppdrag, "[[:punct:]]", " ")
+my_data$Kund<-str_remove(my_data$Kund, "¥")
+View(my_data)
+
+head(my_data$Kön)
+
+######## Data cleaning for 2021 #########################################
+
+my_data2[] <- lapply(my_data2, gsub, pattern='‰', replacement='ä')
+my_data2[] <- lapply(my_data2, gsub, pattern='ˆ', replacement='ö')
+my_data2[] <- lapply(my_data2, gsub, pattern='ˆ', replacement='ö')
+my_data2[] <- lapply(my_data2, gsub, pattern='Â', replacement='å')
+my_data2[] <- lapply(my_data2, gsub, pattern='÷', replacement='ö')
+my_data2[] <- lapply(my_data2, gsub, pattern='ƒ', replacement='ä')
+names(my_data2)[22] <- 'Utbildad inom område'
+my_data2$Uppdrag<-str_remove(my_data2$Uppdrag, "[0-9]+")
+my_data2$Uppdrag<- str_replace_all(my_data2$Uppdrag, "[[:punct:]]", " ")
+my_data2$Kund<-str_remove(my_data2$Kund, "¥")
+View(my_data1)
+########################################################################
+
+my_data$Löneutfall<- as.numeric(my_data$Löneutfall) 
+my_data$Löneanspråk <- as.numeric(my_data$Löneanspråk)
+my_data2$Löneutfall<- as.numeric(my_data2$Löneutfall) 
+my_data2$Löneanspråk<- as.numeric(my_data2$Löneanspråk) 
+
+
+
+############## Data Cleaning för 2020 i Löneutfall###################
+my_data$Löneutfall <- gsub("[^[:digit:]., ]", "", my_data$Löneutfall)
+View(my_data)
+is.numeric(my_data$Löneutfall)
+#################### Data Cleaning för 2021 i Löneutfall ##############
+my_data2$Löneutfall <- gsub("[^[:digit:]., ]", "", my_dat$Löneutfall)
+
+################################################################################################
+########## Att skapa stapeldiagramm för Löneutfall och Utbildning för 2020 och 2021
+
+library(ggplot2)
+library(dplyr)
+library(cowplot)
+graf<-function(z,q,p){
+  z %>% 
+    filter(complete.cases(Kön)) %>%
+    ggplot(aes(x = Utbildning, y = Löneutfall, fill = Kön)) +
+    geom_bar(stat = "identity", position = "dodge") +
+    ylim(0,90000)+
+    labs(x = "\n Utbildning", y = "Löneutfall SEK \n" , fill = "Kön \n",
+         title = q) +
+    scale_x_discrete(labels = c("Grund \n skola","Gymnasium",
+                                "Yrkes \n examen","Högskole \n examen",
+                                "Magister \n examen","Jurist \n examen",
+                                "Licentiat \n examen","Doktors \n examen",
+                                "Affärs \n juridisk \n examen ","Rätts \n vetenskaplig \n examen",
+                                "Kandidat \n examen",
+                                "Master \n examen")) +
+    scale_fill_discrete(labels=c("Man", "Kvinna")) +
+    theme(plot.title = element_text(hjust = p),
+          axis.title.x = element_text(face="bold", colour="blue", size = 12),
+          axis.title.y = element_text(face="bold", colour="blue", size = 12),
+          legend.title = element_text(face="bold", size = 10),
+          axis.text=element_text(size=4.5))}
+a<-graf(z=my_data2,q="Löneutfall baserad på olika utbildningsnivåer år 2021 \n",p=0.5)
+b<-graf(z=my_data,q="Löneutfall baserad på olika utbildningsnivåer år 2020 \n",p=0.5)
+
+plot_grid(a,b,labels = "")
+
+########################################################################################
+########## Att skapa stapeldiagramm för Löneanspråk och Utbildning för 2020 och 2021
+
+
+library(ggplot2)
+library(dplyr)
+library(cowplot)
+graf<-function(z,q,p){
+  z %>% 
+    filter(complete.cases(Kön)) %>%
+    ggplot(aes(x = Utbildning, y = Löneanspråk, fill = Kön)) +
+    geom_bar(stat = "identity", position = "dodge") +
+    ylim(0,90000)+
+    labs(x = "\n Utbildning", y = "Löneanspråk \n", fill = "Kön \n",
+         title = q) +
+    scale_x_discrete(labels = c("Grund \n skola","Gymnasium",
+                                "Yrkes \n examen","Högskole \n examen",
+                                "Magister \n examen","Jurist \n examen",
+                                "Licentiat \n examen","Doktors \n examen",
+                                "Affärs \n juridisk \n examen ","Rätts \n vetenskaplig \n examen",
+                                "Kandidat \n examen",
+                                "Master \n examen")) +
+    scale_fill_discrete(labels=c("Man", "Kvinna")) +
+    theme(plot.title = element_text(hjust = p),
+          axis.title.x = element_text(face="bold", colour="blue", size = 12),
+          axis.title.y = element_text(face="bold", colour="blue", size = 12),
+          legend.title = element_text(face="bold", size = 10),
+          axis.text=element_text(size=4.5))}
+a<-graf(z=my_data2,q="Löneanspråk baserad på olika utbildningsnivåer år 2021 \n",p=0.5)
+b<-graf(z=my_data,q="Löneanspråk baserad på olika utbildningsnivåer år 2020 \n",p=0.5)
+
+plot_grid(a,b,labels = "")
+
+############################################################################################################
+
